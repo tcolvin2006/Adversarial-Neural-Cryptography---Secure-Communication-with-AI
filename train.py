@@ -1,6 +1,7 @@
 import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.ticker as mtick
 
 from alice import build_alice
 from bob import build_bob
@@ -35,8 +36,8 @@ eval_keys = keys[:batch_size]
 
 bob_accs = []
 eve_accs = []
-
-# ------------------------
+bob_losses = []
+eve_losses = []
 # Accuracy function
 # ------------------------
 def bit_accuracy(y_true, y_pred):
@@ -78,6 +79,9 @@ def train_alice_bob(m, k):
 # ------------------------
 for epoch in range(epochs):
     step = 0
+    epoch_bob_loss = 0
+    epoch_eve_loss = 0
+    num_steps = 0
     for m, k in dataset:
         # Convert to float32 if needed (mixed precision handles it)
         m = tf.cast(m, tf.float32)
@@ -86,10 +90,18 @@ for epoch in range(epochs):
         # ---------------- Eve training ----------------
         if step % 2 == 0:
             eve_loss = train_eve(m, k)
+            epoch_eve_loss += eve_loss.numpy()
 
         # ---------------- Alice + Bob training ----------------
         bob_loss, eve_loss_ab = train_alice_bob(m, k)
+        epoch_bob_loss += bob_loss.numpy()
+        epoch_eve_loss += eve_loss_ab.numpy()
         step += 1
+        num_steps += 1
+
+    # Average losses for the epoch
+    avg_bob_loss = epoch_bob_loss / num_steps
+    avg_eve_loss = epoch_eve_loss / num_steps
 
     # ---------------- Evaluation per epoch ----------------
     m_eval = tf.convert_to_tensor(eval_messages, dtype=tf.float32)
@@ -106,10 +118,12 @@ for epoch in range(epochs):
 
     bob_accs.append(bob_acc)
     eve_accs.append(eve_acc)
+    bob_losses.append(avg_bob_loss)
+    eve_losses.append(avg_eve_loss)
 
     print("epoch:", epoch + 1)
-    print("bob loss:", bob_loss.numpy())
-    print("eve loss:", eve_loss_ab.numpy())
+    print("bob loss:", avg_bob_loss)
+    print("eve loss:", avg_eve_loss)
     print("bob acc:", bob_acc)
     print("eve acc:", eve_acc)
     print("------------------")
@@ -117,11 +131,17 @@ for epoch in range(epochs):
 # ------------------------
 # Plot results
 # ------------------------
-plt.plot(bob_accs, label="Bob Accuracy")
-plt.plot(eve_accs, label="Eve Accuracy")
+plt.figure(figsize=(10, 6))
+plt.plot(bob_losses, label="Bob Training Loss", color='green', linewidth=2)
+plt.plot(eve_losses, label="Eve Training Loss", color='orange', linewidth=2)
 plt.legend()
-plt.title("Training Accuracy Over Time")
-plt.show()
+plt.title("Training Loss Curves Over Time")
+plt.xlabel("Epoch")
+plt.ylabel("Loss")
+plt.grid(True, alpha=0.3)
+plt.savefig("training_loss_curves.png", dpi=300, bbox_inches='tight')
+print("Training loss curves saved as training_loss_curves.png")
+# plt.show()  # Commented out for headless environment
 
 # ------------------------
 # Final evaluation (FIXED)
