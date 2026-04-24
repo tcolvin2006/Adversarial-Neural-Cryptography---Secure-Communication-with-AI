@@ -50,7 +50,6 @@ python3 train.py
 ```
 This produces:
 - `training_loss_curves.png`: Shows training loss over time for Bob and Eve
-- Final evaluation results on 1000 unseen messages
 
 ### Final Evaluation
 Run evaluation on 1000 unseen test messages:
