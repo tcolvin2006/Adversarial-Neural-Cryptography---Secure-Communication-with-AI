@@ -70,23 +70,6 @@ Outputs:
 - `evaluate.py`: Final evaluation on test set
 - `utils.py`: Data generation and loading utilities
 
-## Features
-
-### Interactive Demo
-- **Customizable training**: Input number of epochs and dataset size at runtime
-- **Guaranteed successful encryption**: Demo finds an example where Bob decrypts correctly
-- **Statistics reporting**: Shows Bob's and Eve's accuracy on 100 test messages
-- **Optimized training**: Uses larger batch sizes (256) and higher learning rates (0.002) for faster convergence
-
-### Training Visualization
-- **Loss curves**: Generates `training_loss_curves.png` showing Bob and Eve's training loss over time
-- **Real-time monitoring**: Tracks model convergence during training
-
-### Comprehensive Evaluation
-- Tests on 1000 unseen messages
-- Reports bit-level accuracy for both Bob and Eve
-- Demonstrates the security of the adversarial cryptography approach
-
 ## Results
 
 With the optimized parameters:
