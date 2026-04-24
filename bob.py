@@ -6,7 +6,7 @@ def build_bob(msg_len=16):
     k = Input(shape=(msg_len,))
 
     x = Concatenate()([c, k])
-    x = Dense(32, activation='relu')(x)
+    x = Dense(64, activation='relu')(x)
     x = Dense(32, activation='relu')(x)
     x = Dense(msg_len, activation='sigmoid')(x)
 
